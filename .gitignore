@@ -112,3 +112,4 @@ include/
 
 # Project specific stuff
 data/
+logs/

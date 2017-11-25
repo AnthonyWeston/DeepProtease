@@ -37,12 +37,9 @@ class SparseEncodingPreprocessor(AbstractPreprocessor):
 		self.labeled_sequence_data = final_sequence_data
 		self.labeled_sequence_data['labels'] = self.label_data
 
-		print(self.labeled_sequence_data)
-
 		open_mode = 'w' if self.output_mode == 'replace' else 'a'
 		output_file = open(self.output_filename, open_mode)
-		self.labeled_sequence_data.to_csv(output_file, index = False)
-	
+		self.labeled_sequence_data.to_csv(output_file, index = False, header = False)
 
 	def one_hot_string(length, one_index):
 		return '|'.join(['0' if i != one_index else '1' for i in range(length)])

@@ -54,7 +54,7 @@ class AbstractPreprocessor:
 
 		self.input_filename = args.i
 		self.output_filename = args.o
-		self.output_mode = args.mode[0]
+		self.output_mode = args.mode
 
 
 
@@ -82,7 +82,7 @@ class AbstractPreprocessor:
 
 		sequence_data = input_data['sequence']
 		self.label_data = input_data['label']
-		self.label_data = self.label_data.replace({-1, 0})
+		self.label_data = self.label_data.replace({-1: 0})
 
 
 		sequence_data = sequence_data.apply(lambda x:'|'.join(list(x)))

@@ -14,7 +14,7 @@ class SparseEncodingModel:
 	log_directory = "logs/"
 
 	def __init__(self, input_data_file = "preprocessed_data/preprocessed_data.csv", 
-			train_percent = 90, learning_rate = .000005, dropout_rate = 0.05, 
+			train_percent = 90, learning_rate = .000005, dropout_rate = 0.25, 
 			batch_size = 512, seed = 1, verbose = False, debug = False):
 		self.learning_rate = learning_rate
 		self._train_percent = train_percent
@@ -22,6 +22,7 @@ class SparseEncodingModel:
 		self.data = ProteaseData(self._train_percent, input_data = input_data_file)
 		self.batch_size = batch_size
 		self.summary_ops = []
+		self.regularizer = tf.contrib.layers.l2_regularizer(scale=10.0)
 
 		# define placeholders. x is the input data, y are the output labels ("truth" data)
 
@@ -29,26 +30,30 @@ class SparseEncodingModel:
 		self.y = tf.placeholder(tf.float32, [None, SparseEncodingModel.output_classes], name = 'y-input')
 
 		# Hidden Layer #1
-		self.hidden_layer_1 = tf.layers.dense(self.x, 15, activation = tf.nn.leaky_relu,
-			name = 'HiddenLayer1')
+		self.hidden_layer_1 = tf.layers.dense(self.x, 50, activation = tf.nn.leaky_relu,
+			name = 'HiddenLayer1', kernel_regularizer = self.regularizer,
+			bias_regularizer = self.regularizer, activity_regularizer = self.regularizer)
 		self.dropout_layer_1 = tf.layers.dropout(self.hidden_layer_1, dropout_rate, name = 'Dropout1')
 		self.norm_layer_1 = tf.contrib.layers.layer_norm(self.dropout_layer_1)
 
 		# Hidden Layer #2
-		self.hidden_layer_2 = tf.layers.dense(self.norm_layer_1, 10, activation = tf.nn.leaky_relu,
-			name = 'HiddenLayer2')
+		self.hidden_layer_2 = tf.layers.dense(self.norm_layer_1, 40, activation = tf.nn.leaky_relu,
+			name = 'HiddenLayer2', kernel_regularizer = self.regularizer,
+			bias_regularizer = self.regularizer, activity_regularizer = self.regularizer)
 		self.dropout_layer_2 = tf.layers.dropout(self.hidden_layer_2, dropout_rate, name = 'Dropout2')
 		self.norm_layer_2 = tf.contrib.layers.layer_norm(self.dropout_layer_2)
 
 		# Hidden Layer #3
-		self.hidden_layer_3 = tf.layers.dense(self.norm_layer_2, 5, activation = tf.nn.leaky_relu,
-			name = 'HiddenLayer3')
+		self.hidden_layer_3 = tf.layers.dense(self.norm_layer_2, 30, activation = tf.nn.leaky_relu,
+			name = 'HiddenLayer3', kernel_regularizer = self.regularizer,
+			bias_regularizer = self.regularizer, activity_regularizer = self.regularizer)
 		self.dropout_layer_3 = tf.layers.dropout(self.hidden_layer_3, dropout_rate, name = 'Dropout3')
 		self.norm_layer_3 = tf.contrib.layers.layer_norm(self.dropout_layer_3)
 
 		# Hidden Layer #4
-		self.hidden_layer_4 = tf.layers.dense(self.norm_layer_3, 3, activation = tf.nn.leaky_relu,
-			name = 'HiddenLayer4')
+		self.hidden_layer_4 = tf.layers.dense(self.norm_layer_3, 20, activation = tf.nn.leaky_relu,
+			name = 'HiddenLayer4', kernel_regularizer = self.regularizer,
+			bias_regularizer = self.regularizer, activity_regularizer = self.regularizer)
 		self.dropout_layer_4 = tf.layers.dropout(self.hidden_layer_4, dropout_rate, name = 'Dropout4')
 		self.norm_layer_4 = tf.contrib.layers.layer_norm(self.dropout_layer_4)
 
@@ -105,7 +110,7 @@ class SparseEncodingModel:
 			})
 
 
-	def initialize_and_train(self, num_epochs = 100, eval_interval = 200):
+	def initialize_and_train(self, num_epochs = 25000, eval_interval = 200):
 
 		self.sess = tf.Session()
 			

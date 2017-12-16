@@ -11,7 +11,7 @@ class ProteaseData:
 	def __init__(self, train_percent, input_data = "preprocessed_data/preprocessed_data.csv", 
 		verbose = True, seed = 0):
 
-		self.train_percent = train_percent
+		self.train_percent = int(train_percent)
 
 		"""
 		Shuffle the training examples, using seed as the initial seed
